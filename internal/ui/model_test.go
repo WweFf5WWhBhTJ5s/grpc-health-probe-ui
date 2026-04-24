@@ -74,3 +74,26 @@ func TestModelUpdate(t *testing.T) {
 		t.Errorf("UpdatedAt not set correctly")
 	}
 }
+
+func TestModelUpdateOverwritesPreviousStatuses(t *testing.T) {
+	m := NewModel(time.Second)
+
+	first := []Status{
+		{Target: "localhost:50051", Service: "svc", State: grpc_health_v1.HealthCheckResponse_SERVING},
+		{Target: "localhost:50052", Service: "svc", State: grpc_health_v1.HealthCheckResponse_NOT_SERVING},
+		{Target: "localhost:50053", Service: "svc", State: grpc_health_v1.HealthCheckResponse_SERVING},
+	}
+	m.Update(first)
+
+	second := []Status{
+		{Target: "localhost:50051", Service: "svc", State: grpc_health_v1.HealthCheckResponse_NOT_SERVING},
+	}
+	m.Update(second)
+
+	if len(m.Statuses) != 1 {
+		t.Errorf("expected 1 status after second update, got %d", len(m.Statuses))
+	}
+	if m.Statuses[0].State != grpc_health_v1.HealthCheckResponse_NOT_SERVING {
+		t.Errorf("expected NOT_SERVING after second update, got %v", m.Statuses[0].State)
+	}
+}
