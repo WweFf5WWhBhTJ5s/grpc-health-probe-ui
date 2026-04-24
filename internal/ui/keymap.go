@@ -1,16 +1,19 @@
 package ui
 
-import "github.com/charmbracelet/bubbles/key"
+import (
+	"github.com/charmbracelet/bubbles/key"
+)
 
-// KeyMap defines the keybindings for the dashboard.
+// KeyMap holds all key bindings for the dashboard.
 type KeyMap struct {
 	Quit    key.Binding
 	Refresh key.Binding
 	Up      key.Binding
 	Down    key.Binding
+	Sort    key.Binding
 }
 
-// DefaultKeyMap returns the default keybindings.
+// DefaultKeyMap returns the default key bindings.
 func DefaultKeyMap() KeyMap {
 	return KeyMap{
 		Quit: key.NewBinding(
@@ -29,18 +32,23 @@ func DefaultKeyMap() KeyMap {
 			key.WithKeys("down", "j"),
 			key.WithHelp("↓/j", "down"),
 		),
+		Sort: key.NewBinding(
+			key.WithKeys("s"),
+			key.WithHelp("s", "cycle sort"),
+		),
 	}
 }
 
-// ShortHelp returns a compact list of key bindings for the help view.
+// ShortHelp implements help.KeyMap.
 func (k KeyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Up, k.Down, k.Refresh, k.Quit}
+	return []key.Binding{k.Refresh, k.Sort, k.Quit}
 }
 
-// FullHelp returns the full list of key bindings grouped by category.
+// FullHelp implements help.KeyMap.
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Up, k.Down},
-		{k.Refresh, k.Quit},
+		{k.Refresh, k.Sort},
+		{k.Quit},
 	}
 }
