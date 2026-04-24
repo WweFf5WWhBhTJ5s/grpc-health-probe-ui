@@ -4,16 +4,18 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 )
 
-// KeyMap holds all key bindings for the dashboard.
+// KeyMap defines all key bindings for the dashboard.
 type KeyMap struct {
 	Quit    key.Binding
 	Refresh key.Binding
+	Sort    key.Binding
 	Up      key.Binding
 	Down    key.Binding
-	Sort    key.Binding
+	Filter  key.Binding
+	Escape  key.Binding
 }
 
-// DefaultKeyMap returns the default key bindings.
+// DefaultKeyMap returns the default keyboard bindings.
 func DefaultKeyMap() KeyMap {
 	return KeyMap{
 		Quit: key.NewBinding(
@@ -24,6 +26,10 @@ func DefaultKeyMap() KeyMap {
 			key.WithKeys("r"),
 			key.WithHelp("r", "refresh"),
 		),
+		Sort: key.NewBinding(
+			key.WithKeys("s"),
+			key.WithHelp("s", "sort"),
+		),
 		Up: key.NewBinding(
 			key.WithKeys("up", "k"),
 			key.WithHelp("↑/k", "up"),
@@ -32,23 +38,28 @@ func DefaultKeyMap() KeyMap {
 			key.WithKeys("down", "j"),
 			key.WithHelp("↓/j", "down"),
 		),
-		Sort: key.NewBinding(
-			key.WithKeys("s"),
-			key.WithHelp("s", "cycle sort"),
+		Filter: key.NewBinding(
+			key.WithKeys("/"),
+			key.WithHelp("/", "filter"),
+		),
+		Escape: key.NewBinding(
+			key.WithKeys("esc"),
+			key.WithHelp("esc", "clear filter"),
 		),
 	}
 }
 
-// ShortHelp implements help.KeyMap.
+// ShortHelp returns a compact list of key bindings for the help view.
 func (k KeyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Refresh, k.Sort, k.Quit}
+	return []key.Binding{k.Refresh, k.Sort, k.Filter, k.Quit}
 }
 
-// FullHelp implements help.KeyMap.
+// FullHelp returns all key bindings grouped for the full help view.
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Up, k.Down},
 		{k.Refresh, k.Sort},
+		{k.Filter, k.Escape},
 		{k.Quit},
 	}
 }
