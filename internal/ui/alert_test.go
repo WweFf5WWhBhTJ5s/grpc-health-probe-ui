@@ -74,3 +74,18 @@ func TestAlertQueue_ActiveReturnsCopy(t *testing.T) {
 		t.Error("Active() should return a copy, not a reference")
 	}
 }
+
+func TestAlertQueue_PruneAll(t *testing.T) {
+	q := NewAlertQueue(5)
+	q.Push(makeAlert("a", AlertInfo, 1*time.Second))
+	q.Push(makeAlert("b", AlertWarn, 1*time.Second))
+	q.Push(makeAlert("c", AlertError, 1*time.Second))
+
+	q.Prune(baseTime.Add(2 * time.Second))
+	if q.Len() != 0 {
+		t.Fatalf("expected empty queue after all alerts expire, got %d", q.Len())
+	}
+	if len(q.Active()) != 0 {
+		t.Error("expected Active() to return empty slice after full prune")
+	}
+}
