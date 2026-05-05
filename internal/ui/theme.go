@@ -62,3 +62,17 @@ func DefaultTheme() Theme {
 			Bold(true),
 	}
 }
+
+// StatusStyle returns the appropriate style for a given gRPC serving status
+// string. Recognised values are "SERVING", "NOT_SERVING", and "UNKNOWN".
+// Any unrecognised status falls back to the Unknown style.
+func (t Theme) StatusStyle(status string) lipgloss.Style {
+	switch status {
+	case "SERVING":
+		return t.Serving
+	case "NOT_SERVING":
+		return t.NotServing
+	default:
+		return t.Unknown
+	}
+}
